@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\SuggestionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -107,6 +108,11 @@ Route::group([
 
     });
 
+    Route::prefix('suggestions')->group(function () {
+
+        Route::post('/', [SuggestionController::class, 'store']);
+
+    });
 
 
 });

@@ -12,7 +12,7 @@ class Suggestion extends Model
 
     protected $fillable = [
         'username',
-        'phone_number',
+        'mobile_number',
         'notes'
     ];
 
@@ -20,7 +20,6 @@ class Suggestion extends Model
     {
         return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
     }
-
 
     public function getUpdatedAtAttribute($value)
     {

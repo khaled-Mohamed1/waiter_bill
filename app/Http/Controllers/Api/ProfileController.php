@@ -9,12 +9,11 @@ use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Twilio\Rest\Client;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         try {
@@ -36,9 +35,6 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function showReceipts()
     {
         try {
@@ -99,6 +95,18 @@ class ProfileController extends Controller
                     'errors' => $validateUser->errors()
                 ], 401);
             }
+
+//            $receiverNumber = "+970567494761";
+//            $message = "This is testing from CodeSolutionStuff.com";
+//
+//            $account_sid = getenv("TWILIO_SID");
+//            $auth_token = getenv("TWILIO_TOKEN");
+//            $twilio_number = getenv("TWILIO_FROM");
+//
+//            $client = new Client($account_sid, $auth_token);
+//            $client->messages->create($receiverNumber, [
+//                'from' => $twilio_number,
+//                'body' => $message]);
 
             // Update the user's password
             $user->password = bcrypt($request->new_password);

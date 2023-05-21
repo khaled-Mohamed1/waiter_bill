@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('suggestions', function (Blueprint $table) {
             $table->id();
             $table->string('username')->nullable();
-            $table->string('phone_number')->nullable();
+            $table->string('mobile_number')->nullable();
             $table->string('notes');
             $table->timestamps();
         });
