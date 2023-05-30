@@ -69,6 +69,7 @@ class CustomerController extends Controller
                     'customer_email.unique' => 'البريد الإلكتروني مسجل مسبقا',
                     'customer_phone_number.required' => 'يجب إدخال رقم الهاتف',
                     'customer_address.required' => 'يجب إدخال مكان إقامة العميل!',
+                    'customer_phone_number.unique' => 'رقم الهاتف مسجل مسبقا',
 
                 ]
             );
