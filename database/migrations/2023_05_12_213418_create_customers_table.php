@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('customer_email');
             $table->string('customer_phone_number');
             $table->string('customer_address');
+            $table->text('customer_image')->nullable();
             $table->string('customer_notes')->nullable();
             $table->boolean('customer_status')->default(false);
             $table->float('wallet')->default(0);

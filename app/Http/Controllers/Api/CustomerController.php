@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CustomerController extends Controller
 {
@@ -80,12 +81,19 @@ class CustomerController extends Controller
                 ], 401);
             }
 
+            if(isset($request->customr_image)){
+                $imageName = Str::random(32) . "." . $request->customr_image->getClientOriginalExtension();
+                $path = 'https://testing.pal-lady.com/storage/app/public/customers/' . $imageName;
+                Storage::disk('public')->put('customers/' . $imageName, file_get_contents($request->customr_image));
+            }
+
             $user = auth()->user();
 
             $customer = Customer::create([
                 'customer_name' => $request->customer_name,
                 'customer_email' => $request->customer_email,
                 'customer_phone_number' => $request->customer_phone_number,
+                'customer_image' => $path,
                 'customer_address' => $request->customer_address,
                 'customer_notes' => $request->customer_notes,
                 'company_id' => $user->company_id,
@@ -174,16 +182,16 @@ class CustomerController extends Controller
                 $request->all(),
                 [
                     'customer_name' => 'required',
-                    'customer_email' => 'required|email|exists:customers,customer_email',
-                    'customer_phone_number' => 'required|exists:customers,customer_phone_number',
+                    'customer_email' => 'required|email|unique:customers,customer_email' . $id,
+                    'customer_phone_number' => 'required|unique:customers,customer_phone_number' . $id,
                     'customer_address' => 'required',
                 ],[
                     'customer_name.required' => 'يجب إدخال اسم العميل!',
                     'customer_email.required' => 'يجب إدخال البريد الإلكتروني',
                     'customer_email.email' => 'يجب أن يكون البريد الإلكتروني صالحاً ويحتوي على @',
-                    'customer_email.exists' => 'البريد الإلكتروني مسجل مسبقا',
+                    'customer_email.unique' => 'البريد الإلكتروني مسجل مسبقا',
                     'customer_phone_number.required' => 'يجب إدخال رقم الهاتف',
-                    'customer_phone_number.exists' => 'رقم الهاتف مسجل مسبقا',
+                    'customer_phone_number.unique' => 'رقم الهاتف مسجل مسبقا',
                     'customer_address.required' => 'يجب إدخال مكان إقامة العميل!',
 
                 ]
@@ -197,10 +205,20 @@ class CustomerController extends Controller
                 ], 401);
             }
 
+            $storage = Storage::disk('public');
+            if(isset($request->customer_image)){
+                if ($storage->exists('customers/' . basename($customer->customer_image)))
+                    $storage->delete('customers/' . basename($customer->customer_image));
+                $imageName = Str::random(32) . "." . $request->customer_image->getClientOriginalExtension();
+                $path = 'https://testing.pal-lady.com/storage/app/public/customers/' . $imageName;
+                Storage::disk('public')->put('customers/' . $imageName, file_get_contents($request->customer_image));
+            }
+
             $customer->update([
                 'customer_name' => $request->customer_name,
                 'customer_email' => $request->customer_email,
                 'customer_phone_number' => $request->customer_phone_number,
+                'customer_image' => $path,
                 'customer_address' => $request->customer_address,
                 'customer_notes' => $request->customer_notes,
                 'company_id' => $user->company_id,
