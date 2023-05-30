@@ -82,9 +82,9 @@ class CustomerController extends Controller
             }
 
             if(isset($request->customer_image)){
-                $imageName = Str::random(32) . "." . $request->customr_image->getClientOriginalExtension();
+                $imageName = Str::random(32) . "." . $request->customer_image->getClientOriginalExtension();
                 $path = 'https://testing.pal-lady.com/storage/app/public/customers/' . $imageName;
-                Storage::disk('public')->put('customers/' . $imageName, file_get_contents($request->customr_image));
+                Storage::disk('public')->put('customers/' . $imageName, file_get_contents($request->customer_image));
             }
 
             $user = auth()->user();
