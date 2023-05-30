@@ -261,6 +261,11 @@ class CustomerController extends Controller
                 ], 404);
             }
 
+            // Public storage
+            $storage = Storage::disk('public');
+            if ($storage->exists('customers/' . basename($customer->customer_image)))
+                $storage->delete('customers/' . basename($customer->customer_image));
+
             $customer->delete();
 
             DB::commit();
