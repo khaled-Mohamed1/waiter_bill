@@ -84,7 +84,7 @@ class CustomerController extends Controller
 
             if(isset($request->customer_image)){
                 $imageName = Str::random(32) . "." . $request->customer_image->getClientOriginalExtension();
-                $path = 'https://testing.pal-lady.com/storage/app/public/customers/' . $imageName;
+                $path = 'https://waiterbail.com/storage/app/public/customers/' . $imageName;
                 Storage::disk('public')->put('customers/' . $imageName, file_get_contents($request->customer_image));
             }
 
@@ -211,7 +211,7 @@ class CustomerController extends Controller
                 if ($storage->exists('customers/' . basename($customer->customer_image)))
                     $storage->delete('customers/' . basename($customer->customer_image));
                 $imageName = Str::random(32) . "." . $request->customer_image->getClientOriginalExtension();
-                $path = 'https://testing.pal-lady.com/storage/app/public/customers/' . $imageName;
+                $path = 'https://waiterbail.com/storage/app/public/customers/' . $imageName;
                 Storage::disk('public')->put('customers/' . $imageName, file_get_contents($request->customer_image));
             }
 

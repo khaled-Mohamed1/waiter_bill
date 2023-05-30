@@ -81,7 +81,7 @@ class ProductController extends Controller
 
             if(isset($request->product_image)){
                 $imageName = Str::random(32) . "." . $request->product_image->getClientOriginalExtension();
-                $path = 'https://testing.pal-lady.com/storage/app/public/products/' . $imageName;
+                $path = 'https://waiterbail.com/storage/app/public/products/' . $imageName;
                 Storage::disk('public')->put('products/' . $imageName, file_get_contents($request->product_image));
             }
 
@@ -206,7 +206,7 @@ class ProductController extends Controller
                 if ($storage->exists('products/' . basename($product->product_image)))
                     $storage->delete('products/' . basename($product->product_image));
                 $imageName = Str::random(32) . "." . $request->product_image->getClientOriginalExtension();
-                $path = 'https://testing.pal-lady.com/storage/app/public/products/' . $imageName;
+                $path = 'https://waiterbail.com/storage/app/public/products/' . $imageName;
                 Storage::disk('public')->put('products/' . $imageName, file_get_contents($request->product_image));
             }
 

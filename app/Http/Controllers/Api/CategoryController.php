@@ -74,7 +74,7 @@ class CategoryController extends Controller
 
             if(isset($request->category_image)){
                 $imageName = Str::random(32) . "." . $request->category_image->getClientOriginalExtension();
-                $path = 'https://testing.pal-lady.com/storage/app/public/categories/' . $imageName;
+                $path = 'https://waiterbail.com/storage/app/public/categories/' . $imageName;
                 Storage::disk('public')->put('categories/' . $imageName, file_get_contents($request->category_image));
             }
 
@@ -189,7 +189,7 @@ class CategoryController extends Controller
                 if ($storage->exists('categories/' . basename($category->category_image)))
                     $storage->delete('categories/' . basename($category->category_image));
                 $imageName = Str::random(32) . "." . $request->category_image->getClientOriginalExtension();
-                $path = 'https://testing.pal-lady.com/storage/app/public/categories/' . $imageName;
+                $path = 'https://waiterbail.com/storage/app/public/categories/' . $imageName;
                 Storage::disk('public')->put('categories/' . $imageName, file_get_contents($request->category_image));
             }
 
