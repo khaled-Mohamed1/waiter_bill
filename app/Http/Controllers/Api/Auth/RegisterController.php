@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\Helper;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\OneUserResource;
 use App\Models\CompanyCode;
 use App\Models\User;
 use App\Notifications\VerifyPhone;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
@@ -56,7 +55,7 @@ class RegisterController extends Controller
                 'success' => true,
                 'message' => 'Register successful',
                 'data' => [
-                    'user' => new UserResource($user),
+                    'user' => new OneUserResource($user),
                 ],
             ], 200);
 

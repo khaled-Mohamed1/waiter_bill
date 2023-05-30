@@ -35,6 +35,8 @@ class SuggestionController extends Controller
         DB::beginTransaction();
         try {
 
+            $user = auth()->user();
+
             $validateUser = Validator::make(
                 $request->all(),
                 [
@@ -53,8 +55,9 @@ class SuggestionController extends Controller
             }
 
             $suggestion = Suggestion::create([
+                'company_id' => $user->company_id,
                 'username' => $request->username,
-                'mobile_number' => $request->mobile_number,
+                'phone_number' => $request->phone_number,
                 'notes' => $request->notes,
             ]);
 

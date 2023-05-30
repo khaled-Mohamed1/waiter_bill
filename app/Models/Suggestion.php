@@ -12,9 +12,15 @@ class Suggestion extends Model
 
     protected $fillable = [
         'username',
-        'mobile_number',
-        'notes'
+        'phone_number',
+        'notes',
+        'company_id'
     ];
+
+    public function CompanySuggestion(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CompanyCode::class, 'company_id', 'id');
+    }
 
     public function getCreatedAtAttribute($value)
     {

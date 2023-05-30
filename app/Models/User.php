@@ -52,15 +52,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'number_verified_at' => 'datetime',
-        'mobile_verify_code_sent_at' => 'datetime',
-        'mobile_last_attempt_date' => 'datetime'
     ];
-
-    public function routeNotificationForVonage($notification)
-    {
-        return $this->mobile_number;
-    }
 
     public function CompanyUser(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

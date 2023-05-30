@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('suggestions', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('company_id')->unsigned()->nullable();
+            $table->foreign('company_id')->references('id')->on('company_codes')->cascadeOnDelete();
             $table->string('username')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('notes');

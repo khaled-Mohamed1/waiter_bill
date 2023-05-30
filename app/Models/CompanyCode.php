@@ -39,6 +39,11 @@ class CompanyCode extends Model
         return $this->hasMany(Receipt::class, 'company_id', 'id');
     }
 
+    public function suggestions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Suggestion::class, 'company_id', 'id');
+    }
+
     public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
