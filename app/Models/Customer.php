@@ -14,7 +14,7 @@ class Customer extends Model
         'customer_name',
         'customer_email',
         'customer_phone_number',
-        'customer-image',
+        'customer_image',
         'customer_notes',
         'customer_address',
         'user_id',
