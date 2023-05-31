@@ -29,7 +29,7 @@ class ReceiptController extends Controller
                 'success' => true,
                 'message' => 'تم إرجاع جميع الإيصالات بنجاح',
                 'data' => [
-                    'receipts' => new ReceiptResource($receipts),
+                    'receipts' => ReceiptResource::collection($receipts),
                 ],
             ], 200);
 
