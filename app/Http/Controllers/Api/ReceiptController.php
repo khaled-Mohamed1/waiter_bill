@@ -23,7 +23,7 @@ class ReceiptController extends Controller
     {
         try {
             $user = auth()->user();
-            $receipts = Receipt::where('company_id', $user->company_id)->paginate();
+            $receipts = Receipt::with('purchases')->where('company_id', $user->company_id)->paginate();
 
             return response()->json([
                 'success' => true,
