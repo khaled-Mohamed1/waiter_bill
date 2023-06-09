@@ -252,7 +252,7 @@ class CustomerController extends Controller
         DB::beginTransaction();
         try {
             // Detail
-            $customer = Customer::find($id);
+            $customer = Customer::where('company_id', $user->company_id)->find($id);
             if (!$customer) {
                 return response()->json([
                     'status' => false,
@@ -288,7 +288,8 @@ class CustomerController extends Controller
         DB::beginTransaction();
         try {
             // Detail
-            $customer = Customer::find($id);
+            $user = auth()->user();
+            $customer = Customer::where('company_id', $user->company_id)->find($id);
             if (!$customer) {
                 return response()->json([
                     'status' => false,
