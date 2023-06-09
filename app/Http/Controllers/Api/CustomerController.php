@@ -183,8 +183,8 @@ class CustomerController extends Controller
                 $request->all(),
                 [
                     'customer_name' => 'required',
-                    'customer_email' => 'required|email|unique:customers,customer_email' . $id,
-                    'customer_phone_number' => 'required|unique:customers,customer_phone_number' . $id,
+                    'customer_email' => 'required|email|unique:customers,customer_email,' . $id,
+                    'customer_phone_number' => 'required|unique:customers,customer_phone_number,' . $id,
                     'customer_address' => 'required',
                 ],[
                     'customer_name.required' => 'يجب إدخال اسم العميل!',
