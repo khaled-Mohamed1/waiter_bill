@@ -252,6 +252,7 @@ class CustomerController extends Controller
         DB::beginTransaction();
         try {
             // Detail
+            $user = auth()->user();
             $customer = Customer::where('company_id', $user->company_id)->find($id);
             if (!$customer) {
                 return response()->json([
