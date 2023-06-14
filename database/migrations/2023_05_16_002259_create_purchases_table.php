@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
             $table->bigInteger('receipt_id')->unsigned()->nullable();
             $table->foreign('receipt_id')->references('id')->on('receipts')->cascadeOnDelete();
-            $table->integer('quantity');
-            $table->float('discount');
+            $table->integer('quantity')->default(1);
+            $table->float('discount')->default(0);
             $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });

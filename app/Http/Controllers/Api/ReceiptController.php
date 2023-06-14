@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\Helper;
-use App\Http\Resources\CategoryResource;
 use App\Http\Resources\OneReceiptResource;
 use App\Http\Resources\ReceiptResource;
 use App\Models\Customer;
@@ -32,10 +31,9 @@ class ReceiptController extends Controller
                     'receipts' => ReceiptResource::collection($receipts),
                 ],
             ], 200);
-
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => $e->getMessage()
             ], 404);
         }
@@ -56,7 +54,6 @@ class ReceiptController extends Controller
     {
         DB::beginTransaction();
         try {
-
             $user = auth()->user();
 
             $total = 0;
@@ -64,11 +61,11 @@ class ReceiptController extends Controller
 
             $purchasesReceiptIds = [];
 
-            foreach ($request->product_id as $key => $product){
-
+            foreach ($request->product_id as $key => $product) {
                 $old_product = Product::find($request->product_id[$key]);
 
-                if(!$old_product){
+                if (!$old_product) {
+                    DB::rollBack();
                     return response()->json([
                         'success' => false,
                         'message' => 'لم يتم العثور على هذا المنتج',
@@ -84,19 +81,18 @@ class ReceiptController extends Controller
 
                 $purchases = Purchases::create([
                     'product_id' => $request->product_id[$key],
-                    'receipt_id' ,
+                    'receipt_id' => null,
                     'quantity' => $request->product_quantity[$key],
                     'discount' => $request->product_discount[$key]
                 ]);
 
                 $purchasesReceiptIds[] = $purchases->id;
-
             }
 
             $total_summation = round($total - ($total * ($total_discount / 100)));
 
             $receipt = Receipt::create([
-                'receipt_number' => Helper::IDGenerator(new Receipt(), 'receipt_number', 6,'R_'),
+                'receipt_number' => Helper::IDGenerator(new Receipt(), 'receipt_number', 6, 'R_'),
                 'total' => $total,
                 'total_discount' => $total_discount,
                 'total_summation' => $total_summation,
@@ -109,7 +105,7 @@ class ReceiptController extends Controller
                 'customer_id' => $request->customer_id,
             ]);
 
-            if($receipt->receipt_number == 'R_000000'){
+            if ($receipt->receipt_number == 'R_000000') {
                 $receipt->receipt_number = 'R_000001';
                 $receipt->save();
             }
@@ -119,19 +115,18 @@ class ReceiptController extends Controller
                 'receipt_id' => $receipt->id,
             ]);
 
-            if(isset($request->customer_id)){
+            if (isset($request->customer_id)) {
                 $customer = Customer::find($request->customer_id);
 
-                if($request->status_bill == 'إضافة الباقي للمحفظة'){
+                if ($request->status_bill == 'إضافة الباقي للمحفظة') {
                     $customer->increment('wallet', $request->rest);
-                }elseif ($request->status_bill == 'فاتورة دائنة'){
+                } elseif ($request->status_bill == 'فاتورة دائنة') {
                     $customer->decrement('wallet', $request->rest);
                 }
 
-                if($request->status_pay == 'الدفع عن طريق المحفظة'){
+                if ($request->status_pay == 'الدفع عن طريق المحفظة') {
                     $customer->decrement('wallet', $request->total_summation);
                 }
-
             }
 
             DB::commit();
@@ -142,15 +137,13 @@ class ReceiptController extends Controller
                     'receipt' => new ReceiptResource($receipt),
                 ],
             ], 200);
-
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => $e->getMessage()
             ], 404);
         }
-
     }
 
     /**
@@ -159,11 +152,10 @@ class ReceiptController extends Controller
     public function show($id)
     {
         try {
-
             $user = auth()->user();
-            $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->where('id', $id)->first();
+            $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->find($id);
 
-            if(!$receipt){
+            if (!$receipt) {
                 return response()->json([
                     'success' => false,
                     'message' => 'لم يتم العثور على هذا الإيصال',
@@ -178,10 +170,9 @@ class ReceiptController extends Controller
                     'receipt' => new OneReceiptResource($receipt),
                 ],
             ], 200);
-
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => $e->getMessage()
             ], 404);
         }
@@ -209,5 +200,80 @@ class ReceiptController extends Controller
     public function destroy(Receipt $receipt)
     {
         //
+    }
+
+    public function refund($id, Request $request){
+        DB::beginTransaction();
+        try {
+
+            $user = auth()->user();
+            $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->find($id);
+
+            if (!$receipt) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'لم يتم العثور على هذا الوصل',
+                    'data' => null,
+                ], 404);
+            }
+
+            foreach ($request->product_id as $key => $product) {
+                $old_product = Product::find($request->product_id[$key]);
+                $old_purchase = Purchases::find($request->purchase_id[$key]);
+
+                if (!$old_product) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'لم يتم العثور على هذا المنتج',
+                        'data' => null,
+                    ], 404);
+                } elseif (!$old_purchase) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'لم يتم العثور على هذا المشتري',
+                        'data' => null,
+                    ], 404);
+                }
+
+                if ($request->product_quantity[$key] != $old_purchase->quantity) {
+                    $remain_quantity = $old_purchase->quantity - $request->product_quantity[$key];
+                    $old_product->increment('stock', $remain_quantity);
+                    $old_product->save();
+                }
+
+                $old_purchase->update([
+                    'product_id' => $request->product_id[$key],
+                    'quantity' => $request->product_quantity[$key],
+                    'discount' => $request->product_discount[$key],
+                    'is_deleted' => $request->is_deleted[$key]
+                ]);
+            }
+
+            $receipt->update([
+                'total' => $request->total,
+                'total_discount' => $request->total_discount,
+                'refunded_value' => $request->refunded_value,
+                'total_summation' => $request->total_summation,
+                'amount_paid' => $request->amount_paid,
+                'rest' => $request->rest,
+                'status' => 'تم الإسترداد'
+            ]);
+
+            DB::commit();
+            $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->find($id);
+            return response()->json([
+                'success' => true,
+                'message' => 'تم استرداد الوصل بنجاح',
+                'data' => [
+                    'receipt' => new ReceiptResource($receipt),
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 }

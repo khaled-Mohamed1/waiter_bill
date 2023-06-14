@@ -99,6 +99,7 @@ Route::group([
         Route::get('/', [ReceiptController::class, 'index']);
         Route::get('/{id}', [ReceiptController::class, 'show']);
         Route::post('/', [ReceiptController::class, 'store']);
+        Route::post('/refund/{id}', [ReceiptController::class, 'refund']);
 
     });
 
