@@ -129,6 +129,8 @@ class ReceiptController extends Controller
                 }
             }
 
+            $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->find($receipt->id);
+
             DB::commit();
             return response()->json([
                 'success' => true,
