@@ -40,6 +40,7 @@ class ProfileController extends Controller
         try {
             $user = auth()->user();
 
+
             $receipts = Receipt::with('purchases')->where('company_id', $user->company_id)->where('user_id', $user->id)->latest()->get();
 
             return response()->json([
