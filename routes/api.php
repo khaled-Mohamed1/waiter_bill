@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\SuggestionController;
+use App\Http\Controllers\Api\ShiftController;
+use App\Http\Controllers\Api\CashManagementController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -115,6 +117,15 @@ Route::group([
 
     });
 
+    Route::prefix('shifts')->group(function () {
+
+        Route::get('/', [ShiftController::class, 'index']);
+        Route::post('/', [ShiftController::class, 'store']);
+        Route::get('/{id}', [ShiftController::class, 'show']);
+        Route::post('/{id}', [ShiftController::class, 'update']);
+        Route::post('/{id}/cash', [CashManagementController::class, 'store']);
+
+    });
 
 });
 

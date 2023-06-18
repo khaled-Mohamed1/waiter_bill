@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Purchases;
 use App\Models\Receipt;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +57,8 @@ class ReceiptController extends Controller
         try {
             $user = auth()->user();
 
+            $shift = Shift::where('company_id', $user->company_id)->where('status', 'open')->first();
+
             $total = 0;
             $total_discount = 0;
 
@@ -71,6 +74,15 @@ class ReceiptController extends Controller
                         'message' => 'لم يتم العثور على هذا المنتج',
                         'data' => null,
                     ], 404);
+                }
+
+                if($shift){
+                    if($request->product_discount[$key] != 0){
+                        $dis = $old_product->product_price -
+                            ($old_product->product_price -
+                                ($old_product->product_price*($request->product_discount[$key])));
+                        $shift->increment('discounts',$dis);
+                    }
                 }
 
                 $old_product->decrement('stock', $request->product_quantity[$key]);
@@ -105,6 +117,8 @@ class ReceiptController extends Controller
                 'customer_id' => $request->customer_id,
             ]);
 
+
+
             if ($receipt->receipt_number == 'R_000000') {
                 $receipt->receipt_number = 'R_000001';
                 $receipt->save();
@@ -115,17 +129,39 @@ class ReceiptController extends Controller
                 'receipt_id' => $receipt->id,
             ]);
 
-            if (isset($request->customer_id)) {
+            if ($request->has('customer_id')) {
                 $customer = Customer::find($request->customer_id);
 
-                if ($request->status_bill == 'إضافة الباقي للمحفظة') {
+                if ($request->status_bill === 'إضافة الباقي للمحفظة') {
                     $customer->increment('wallet', $request->rest);
-                } elseif ($request->status_bill == 'فاتورة دائنة') {
+                    if($shift){
+                        $shift->increment('payments_cash', $request->amount_paid);
+                    }
+                } elseif ($request->status_bill === 'فاتورة دائنة') {
                     $customer->decrement('wallet', $request->rest);
+                }elseif($request->status_bill === 'دفع طبيعي'){
+                    if($shift){
+                        $shift->increment('payments_cash', $total_summation);
+                    }
                 }
 
-                if ($request->status_pay == 'الدفع عن طريق المحفظة') {
+                if ($request->status_pay === 'الدفع عن طريق المحفظة') {
                     $customer->decrement('wallet', $request->total_summation);
+                }
+            }
+
+            if($shift){
+                    $shift->increment('total_sales', $total);
+                if ($request->status_bill === 'إضافة الباقي للمحفظة') {
+                        $shift->increment('payments_cash', $request->amount_paid);
+                }elseif($request->status_bill === 'دفع طبيعي'){
+                        $shift->increment('payments_cash', $total_summation);
+                }
+
+                if ($request->status_pay === 'الدفع عن طريق المحفظة') {
+                    $shift->increment('card', $request->amount_paid);
+                }elseif($request->status_pay === 'الدفع كاش'){
+                    $shift->increment('cash_money', $request->amount_paid);
                 }
             }
 
@@ -210,6 +246,7 @@ class ReceiptController extends Controller
 
             $user = auth()->user();
             $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->find($id);
+            $shift = Shift::where('company_id', $user->company_id)->where('status', 'open')->first();
 
             if (!$receipt) {
                 return response()->json([
@@ -260,6 +297,10 @@ class ReceiptController extends Controller
                 'rest' => $request->rest,
                 'status' => 'تم الإسترداد'
             ]);
+
+            if($shift){
+                $shift->increment('refunds_cash', $request->refunded_value);
+            }
 
             DB::commit();
             $receipt = Receipt::with('purchases')->where('company_id', $user->company_id)->find($id);
