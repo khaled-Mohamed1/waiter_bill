@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\CashManagementController;
+use App\Http\Controllers\Api\OverviewController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,6 +48,8 @@ Route::group([
 
     Route::post('/login', [LoginController::class, 'login']);
     Route::post('/register', [RegisterController::class, 'register']);
+    Route::post('/forget-password', [PasswordReset::class, 'forgetPassword']);
+    Route::post('/reset-password', [PasswordReset::class, 'resetPassword']);
 
 });
 
@@ -124,6 +128,12 @@ Route::group([
         Route::get('/{id}', [ShiftController::class, 'show']);
         Route::post('/{id}', [ShiftController::class, 'update']);
         Route::post('/{id}/cash', [CashManagementController::class, 'store']);
+
+    });
+
+    Route::prefix('overviews')->group(function () {
+
+        Route::get('/statistics', [OverviewController::class, 'statistics']);
 
     });
 

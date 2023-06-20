@@ -7,9 +7,7 @@ use App\Http\Resources\ProfileResource;
 use App\Http\Resources\ReceiptResource;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Twilio\Rest\Client;
 
 class ProfileController extends Controller
 {
@@ -27,11 +25,12 @@ class ProfileController extends Controller
                 ],
             ], 200);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 404);
+                'success' => false,
+                'message' => 'حدث خطأ أثناء إرجاع بيانات الموظف.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -40,8 +39,11 @@ class ProfileController extends Controller
         try {
             $user = auth()->user();
 
-
-            $receipts = Receipt::with('purchases')->where('company_id', $user->company_id)->where('user_id', $user->id)->latest()->get();
+            $receipts = Receipt::with('purchases')
+                ->where('company_id', $user->company_id)
+                ->where('user_id', $user->id)
+                ->latest()
+                ->get();
 
             return response()->json([
                 'success' => true,
@@ -51,53 +53,49 @@ class ProfileController extends Controller
                 ],
             ], 200);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 404);
+                'success' => false,
+                'message' => 'حدث خطأ أثناء إرجاع طلبات الموظف.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
     public function updatePassword(Request $request)
     {
-        DB::beginTransaction();
         try {
-
             $user = auth()->user();
 
-            $validateUser = Validator::make(
-                $request->all(),
-                [
-                    'current_password' => 'required',
-                    'new_password' => 'required|string|min:6',
-                    'confirm_password' => 'required|same:new_password',
-                ],[
-                    'current_password.required' => 'يجب إدخال كلمة المرور الحالية',
-                    'new_password.required' => 'يجب إدخال كلمة المرور الجديدة',
-                    'new_password.min' => 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
-                    'confirm_password.required' => 'يجب إدخال تأكيد كلمة المرور الجديدة',
-                    'confirm_password.same' => 'يجب إدخال تأكيد كلمة المرور مطابقة لكمة المرور الجديدة',
-                ]
-            );
+            $validator = Validator::make($request->all(), [
+                'current_password' => 'required',
+                'new_password' => 'required|string|min:6',
+                'confirm_password' => 'required|same:new_password',
+            ], [
+                'current_password.required' => 'يجب إدخال كلمة المرور الحالية',
+                'new_password.required' => 'يجب إدخال كلمة المرور الجديدة',
+                'new_password.min' => 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+                'confirm_password.required' => 'يجب إدخال تأكيد كلمة المرور الجديدة',
+                'confirm_password.same' => 'يجب إدخال تأكيد كلمة المرور مطابقة لكلمة المرور الجديدة',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'خطأ في التحقق من البيانات',
+                    'errors' => $validator->errors()
+                ], 401);
+            }
 
             // Check if the current password matches the one provided
-            if ($request->current_password != $user->un_password) {
+            if (!Hash::check($request->current_password, $user->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'كلمة السر الحالية غير صحيحة.',
                 ], 401);
             }
 
-            if ($validateUser->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validateUser->errors()
-                ], 401);
-            }
-
-//            $receiverNumber = "+970567494761";
+            //            $receiverNumber = "+970567494761";
 //            $message = "This is testing from CodeSolutionStuff.com";
 //
 //            $account_sid = getenv("TWILIO_SID");
@@ -114,18 +112,17 @@ class ProfileController extends Controller
             $user->un_password = $request->new_password;
             $user->save();
 
-            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'تم تعديل كلمة السر بنجاح',
             ], 200);
 
-        }catch (\Exception $e){
-            DB::rollBack();
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 404);
+                'success' => false,
+                'message' => 'حدث خطأ أثناء تحديث كلمة السر.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -165,3 +162,6 @@ class ProfileController extends Controller
     }
 
 }
+
+
+
