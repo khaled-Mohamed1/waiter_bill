@@ -84,14 +84,24 @@ class User extends Authenticatable
         return $this->hasMany(Shift::class, 'user_id', 'id');
     }
 
+    public function tables(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Table::class, 'user_id', 'id');
+    }
+
+    public function tickets(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Ticket::class, 'user_id', 'id');
+    }
+
     public function getCreatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 
     public function getUpdatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 
 }

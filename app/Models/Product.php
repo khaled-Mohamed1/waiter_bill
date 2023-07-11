@@ -47,14 +47,18 @@ class Product extends Model
         return $this->hasMany(Purchases::class, 'product_id', 'id');
     }
 
-    public function getCreatedAtAttribute($value)
+    public function ticketPurchases(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return $this->hasMany(TicketPurchases::class, 'product_id', 'id');
     }
 
-
-    public function getUpdatedAtAttribute($value)
+    public function getCreatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
+    }
+
+    public function getUpdatedAtAttribute($value): string
+    {
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 }

@@ -46,13 +46,13 @@ class Receipt extends Model
         return $this->hasMany(Purchases::class, 'receipt_id', 'id');
     }
 
-    public function getCreatedAtAttribute($value)
+    public function getCreatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 
-    public function getUpdatedAtAttribute($value)
+    public function getUpdatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 }

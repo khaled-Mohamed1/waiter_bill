@@ -6,27 +6,27 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Purchases extends Model
+class TicketPurchases extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'product_id',
-        'receipt_id',
+        'ticket_id',
+        'price',
         'quantity',
-        'discount',
-        'is_deleted'
     ];
 
-    public function ProductPurchase(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function ProductTicketPurchases(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
-    public function ReceiptPurchase(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function TicketTicketPurchases(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Receipt::class, 'receipt_id', 'id');
+        return $this->belongsTo(Ticket::class, 'ticket_id', 'id');
     }
+
 
     public function getCreatedAtAttribute($value): string
     {

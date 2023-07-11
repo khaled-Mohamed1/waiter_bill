@@ -49,14 +49,23 @@ class CompanyCode extends Model
         return $this->hasMany(Shift::class, 'company_id', 'id');
     }
 
-    public function getCreatedAtAttribute($value)
+    public function tables(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return $this->hasMany(Table::class, 'company_id', 'id');
     }
 
-
-    public function getUpdatedAtAttribute($value)
+    public function tickets(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return $this->hasMany(Ticket::class, 'company_id', 'id');
+    }
+
+    public function getCreatedAtAttribute($value): string
+    {
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
+    }
+
+    public function getUpdatedAtAttribute($value): string
+    {
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 }

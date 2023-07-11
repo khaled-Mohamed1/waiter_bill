@@ -45,11 +45,11 @@ class Shift extends Model
 
     public function getCreatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 
     public function getUpdatedAtAttribute($value): string
     {
-        return Carbon::parse($value)->timezone('Asia/Gaza')->format('Y-m-d H:i');
+        return Carbon::parse($value)->timezone('Asia/Kuwait')->format('Y-m-d H:i');
     }
 }

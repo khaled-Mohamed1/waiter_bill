@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\CashManagementController;
 use App\Http\Controllers\Api\OverviewController;
+use App\Http\Controllers\Api\TableController;
+use App\Http\Controllers\Api\TicketController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -131,11 +133,32 @@ Route::group([
 
     });
 
+    Route::prefix('tables')->group(function () {
+
+        Route::get('/', [TableController::class, 'index']);
+        Route::post('/', [TableController::class, 'store']);
+        Route::get('/{id}', [TableController::class, 'show']);
+        Route::post('/{id}', [TableController::class, 'update']);
+        Route::delete('/{id}', [TableController::class, 'delete']);
+
+    });
+
+    Route::prefix('tickets')->group(function () {
+
+        Route::get('/', [TicketController::class, 'index']);
+        Route::post('/', [TicketController::class, 'store']);
+        Route::get('/{id}', [TicketController::class, 'show']);
+        Route::post('/{id}', [TicketController::class, 'update']);
+        Route::delete('/{id}', [TicketController::class, 'delete']);
+
+    });
+
     Route::prefix('overviews')->group(function () {
 
         Route::get('/statistics', [OverviewController::class, 'statistics']);
 
     });
+
 
 });
 

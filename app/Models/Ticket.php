@@ -6,36 +6,37 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Customer extends Model
+class Ticket extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'customer_name',
-        'customer_email',
-        'customer_phone_number',
-        'customer_image',
-        'customer_notes',
-        'customer_address',
-        'user_id',
         'company_id',
-        'wallet',
-        'customer_status'
+        'user_id',
+        'table_id',
+        'ticket_name',
+        'ticket_total',
+        'ticket_type'
     ];
 
-    public function UserCustomer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function UserTicket(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function CompanyCustomer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function CompanyTicket(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(CompanyCode::class, 'company_id', 'id');
     }
 
-    public function receipts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function TableTicket(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->hasMany(Receipt::class, 'customer_id', 'id');
+        return $this->belongsTo(Table::class, 'table_id', 'id');
+    }
+
+    public function ticketPurchases(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TicketPurchases::class, 'ticket_id', 'id');
     }
 
     public function getCreatedAtAttribute($value): string
