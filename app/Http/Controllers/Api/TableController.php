@@ -18,7 +18,7 @@ class TableController extends Controller
     {
         try {
             $user = auth()->user();
-            $tables = Table::with('tickets')->where('company_id', $user->company_id)->latest()->get();
+            $tables = Table::with('tickets', 'tickets.ticketPurchases')->where('company_id', $user->company_id)->latest()->get();
 
             return response()->json([
                 'success' => true,
