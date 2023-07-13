@@ -83,15 +83,17 @@ class TicketController extends Controller
             }
 
             if($request->ticket_type == 0){
-                $ticket_name = $request->ticket_name;
-            }else{
                 $table = Table::find($request->table_id);
+            }else{
+                $ticket_name = $request->ticket_name;
+
             }
 
             $ticket = Ticket::create([
                 'ticket_name' => $ticket_name ?? $table->table_name,
                 'ticket_total' => $request->ticket_total,
                 'ticket_type' => $request->ticket_type,
+                'table_id' => $request->table_id ?? null,
                 'company_id' => $user->company_id,
                 'user_id' => $user->id
             ]);
@@ -102,9 +104,10 @@ class TicketController extends Controller
             ]);
 
             DB::commit();
+            $ticket = Ticket::with('ticketPurchases')->find($ticket->id);
             return response()->json([
                 'success' => true,
-                'message' => 'تم إنشاء الطاولة بنجاح',
+                'message' => 'تم إنشاء التذكرة بنجاح',
                 'data' => [
                     'tickets' => new TicketResource($ticket),
                 ],
