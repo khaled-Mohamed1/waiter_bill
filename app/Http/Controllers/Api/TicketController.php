@@ -93,7 +93,7 @@ class TicketController extends Controller
                 'ticket_name' => $ticket_name ?? $table->table_name,
                 'ticket_total' => $request->ticket_total,
                 'ticket_type' => $request->ticket_type,
-                'table_id' => $request->table_id ?? null,
+                'table_id' => $table->id ?? null,
                 'company_id' => $user->company_id,
                 'user_id' => $user->id
             ]);
