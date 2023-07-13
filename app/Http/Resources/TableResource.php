@@ -21,7 +21,7 @@ class TableResource extends JsonResource
             'table_name' => $this->table_name,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'tickets' => $this->relationLoaded('tickets') && $this->tickets->isNotEmpty() ? Ticket::collection($this->tickets) : null,
+            'tickets' => $this->relationLoaded('tickets') && $this->tickets->isNotEmpty() ? TicketResource::collection($this->tickets) : null,
         ];
     }
 }
