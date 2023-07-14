@@ -100,7 +100,7 @@ class TicketController extends Controller
                 'ticket_total' => $request->ticket_total,
                 'ticket_type' => $request->ticket_type,
                 'table_id' => $table->id ?? null,
-                'ticket_total_discount' => $request->tickticket_total_discountet_type,
+                'ticket_total_discount' => $request->ticket_total_discount,
                 'ticket_total_summation' => $request->ticket_total_summation,
                 'ticket_paid' => $request->ticket_paid,
                 'ticket_rest' => $request->ticket_rest,
