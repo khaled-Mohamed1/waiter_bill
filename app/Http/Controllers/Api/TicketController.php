@@ -283,6 +283,7 @@ class TicketController extends Controller
 
                 $ticket_purchase_id = $request->ticket_purchase_id[$key] ?? null;
 
+
                 if ($ticket_purchase_id) {
                     $ticket_purchase = TicketPurchases::find($ticket_purchase_id);
 
