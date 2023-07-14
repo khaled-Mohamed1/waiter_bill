@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('category_image')->nullable();
             $table->bigInteger('company_id')->unsigned();
             $table->foreign('company_id')->references('id')->on('company_codes')->cascadeOnDelete();
-            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned()->nullable();;
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->timestamps();
         });

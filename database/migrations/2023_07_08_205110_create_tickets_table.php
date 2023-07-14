@@ -27,6 +27,7 @@ return new class extends Migration
             $table->float('ticket_paid')->default(0);
             $table->float('ticket_rest')->default(0);
             $table->string('ticket_payment')->nullable();
+            $table->string('ticket_status')->default('مستمرة');
             $table->timestamps();
         });
     }

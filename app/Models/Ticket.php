@@ -22,6 +22,7 @@ class Ticket extends Model
         'ticket_paid',
         'ticket_rest',
         'ticket_payment',
+        'ticket_status'
     ];
 
     public function UserTicket(): \Illuminate\Database\Eloquent\Relations\BelongsTo

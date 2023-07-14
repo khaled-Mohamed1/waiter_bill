@@ -90,6 +90,11 @@ class TicketController extends Controller
 
             }
 
+            if(isset($request->ticket_paid)){
+                $ticket_status = 'منتهية';
+            }
+
+
             $ticket = Ticket::create([
                 'ticket_name' => $ticket_name ?? $table->table_name,
                 'ticket_total' => $request->ticket_total,
@@ -100,6 +105,7 @@ class TicketController extends Controller
                 'ticket_paid' => $request->ticket_paid,
                 'ticket_rest' => $request->ticket_rest,
                 'ticket_payment' => $request->ticket_payment,
+                'ticket_status' => $ticket_status ?? 'مستمرة',
                 'company_id' => $user->company_id,
                 'user_id' => $user->id
             ]);
