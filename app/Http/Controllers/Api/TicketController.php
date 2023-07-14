@@ -224,35 +224,113 @@ class TicketController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $ticketId)
     {
         DB::beginTransaction();
         try {
-
             $user = auth()->user();
-            $ticket = Ticket::find($id);
 
-            $ticket->update([
-                'ticket_name' => $request->ticket_name,
-                'ticket_total' => $request->ticket_total,
-                'ticket_type' => $request->ticket_type,
-                'company_id' => $user->company_id,
-                'user_id' => $user->id
-            ]);
+            $ticket = Ticket::find($ticketId);
+
+            if (!$ticket) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'لم يتم العثور على هذه التذكرة',
+                    'data' => null,
+                ], 404);
+            }
+
+            $ticket->ticket_name = $request->ticket_name ?? $ticket->ticket_name;
+            $ticket->ticket_total = $request->ticket_total ?? $ticket->ticket_total;
+            $ticket->ticket_type = $request->ticket_type ?? $ticket->ticket_type;
+
+            if ($request->ticket_type == 0) {
+                $ticket->table_id = $request->table_id ?? $ticket->table_id;
+            } else {
+                $ticket->ticket_name = $request->ticket_name ?? $ticket->ticket_name;
+            }
+
+            $ticket->ticket_total_discount = $request->ticket_total_discount ?? $ticket->ticket_total_discount;
+            $ticket->ticket_total_summation = $request->ticket_total_summation ?? $ticket->ticket_total_summation;
+            $ticket->ticket_paid = $request->ticket_paid ?? $ticket->ticket_paid;
+            $ticket->ticket_rest = $request->ticket_rest ?? $ticket->ticket_rest;
+            $ticket->ticket_payment = $request->ticket_payment ?? $ticket->ticket_payment;
+
+            if (isset($request->ticket_paid)) {
+                $ticket->ticket_status = 'منتهية';
+            } else {
+                $ticket->ticket_status = $ticket->ticket_status ?? 'مستمرة';
+            }
+
+            $ticket->ticket_note = $request->ticket_note ?? $ticket->ticket_note;
+
+            $ticket->save();
+
+            $purchasesTicketIds = [];
+
+            foreach ($request->product_id as $key => $product) {
+                $old_product = Product::find($request->product_id[$key]);
+
+                if (!$old_product) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'لم يتم العثور على هذا المنتج',
+                        'data' => null,
+                    ], 404);
+                }
+
+                $ticket_purchase_id = $request->ticket_purchase_id[$key] ?? null;
+
+                if ($ticket_purchase_id) {
+                    $ticket_purchase = TicketPurchases::find($ticket_purchase_id);
+
+                    if (!$ticket_purchase) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'لم يتم العثور على هذه المشتريات',
+                            'data' => null,
+                        ], 404);
+                    }
+
+                    $ticket_purchase->product_id = $request->product_id[$key];
+                    $ticket_purchase->quantity = $request->product_quantity[$key];
+                    $ticket_purchase->price = $request->product_price[$key];
+                    $ticket_purchase->discount = $request->product_discount[$key];
+                    $ticket_purchase->save();
+                } else {
+                    $ticket_purchase = TicketPurchases::create([
+                        'product_id' => $request->product_id[$key],
+                        'ticket_id' => $ticket->id,
+                        'quantity' => $request->product_quantity[$key],
+                        'price' => $request->product_price[$key],
+                        'discount' => $request->product_discount[$key]
+                    ]);
+                }
+
+                $purchasesTicketIds[] = $ticket_purchase->id;
+            }
+
+            // Delete any ticket purchases that were not included in the request
+            TicketPurchases::where('ticket_id', $ticket->id)->whereNotIn('id', $purchasesTicketIds)->delete();
 
             DB::commit();
+
+            $ticket = Ticket::with('ticketPurchases')->find($ticket->id);
+
             return response()->json([
                 'success' => true,
-                'message' => 'تم تعديل الطاولة بنجاح',
+                'message' => 'تم تحديث التذكرة بنجاح',
                 'data' => [
-                    'ticket' => new TicketResource($ticket),
+                    'tickets' => new TicketResource($ticket),
                 ],
             ], 200);
-
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => $e->getMessage()
             ], 404);
         }
