@@ -135,6 +135,50 @@ class TicketController extends Controller
         }
     }
 
+    public function paid(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+
+            $user = auth()->user();
+            // Detail
+            $ticket = Table::find($id);
+            if (!$ticket) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'لم يتم العثور على هذه التذكرة',
+                    'data' => null,
+                ], 404);
+            }
+
+            $ticket->update([
+                'ticket_paid' => $request->ticket_paid,
+                'ticket_rest' => $request->ticket_rest,
+                'ticket_payment' => $request->ticket_payment,
+                'ticket_status' => 'منتهبة',
+            ]);
+
+            DB::commit();
+            $ticket = Ticket::with('ticketPurchases')->find($ticket->id);
+            return response()->json([
+                'success' => true,
+                'message' => 'تم دفع التذكرة بنجاح',
+                'data' => [
+                    'ticket' => new TicketResource($ticket),
+                ],
+            ], 200);
+
+        }catch (\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+
+
     /**
      * Display the specified resource.
      */
@@ -222,8 +266,8 @@ class TicketController extends Controller
         DB::beginTransaction();
         try {
             // Detail
-            $tickets = Table::find($id);
-            if (!$tickets) {
+            $ticket = Table::find($id);
+            if (!$ticket) {
                 return response()->json([
                     'status' => false,
                     'message' => 'لم يتم العثور على هذه التذكرة',
@@ -232,7 +276,7 @@ class TicketController extends Controller
             }
 
             // Delete tickets
-            $tickets->delete();
+            $ticket->delete();
 
             DB::commit();
             return response()->json([

@@ -148,6 +148,7 @@ Route::group([
         Route::get('/', [TicketController::class, 'index']);
         Route::post('/', [TicketController::class, 'store']);
         Route::get('/{id}', [TicketController::class, 'show']);
+        Route::get('/{id}/paid', [TicketController::class, 'paid']);
         Route::post('/{id}', [TicketController::class, 'update']);
         Route::delete('/{id}', [TicketController::class, 'delete']);
 
