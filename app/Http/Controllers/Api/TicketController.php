@@ -106,6 +106,7 @@ class TicketController extends Controller
                 'ticket_rest' => $request->ticket_rest,
                 'ticket_payment' => $request->ticket_payment,
                 'ticket_status' => $ticket_status ?? 'مستمرة',
+                'ticket_note' => $request->ticket_note,
                 'company_id' => $user->company_id,
                 'user_id' => $user->id
             ]);

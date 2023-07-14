@@ -27,6 +27,7 @@ class TicketResource extends JsonResource
             'ticket_rest' => $this->ticket_rest,
             'ticket_payment' => $this->ticket_payment,
             'ticket_status' => $this->ticket_status,
+            'ticket_note' => $this->ticket_note,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'table_id' => TableResource::make(Table::find($this->table_id)),
