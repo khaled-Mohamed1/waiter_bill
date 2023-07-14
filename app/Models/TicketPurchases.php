@@ -15,6 +15,7 @@ class TicketPurchases extends Model
         'ticket_id',
         'price',
         'quantity',
+        'discount'
     ];
 
     public function ProductTicketPurchases(): \Illuminate\Database\Eloquent\Relations\BelongsTo

@@ -20,6 +20,7 @@ class TicketPurchasesResource extends JsonResource
             'ticket_id' => $this->ticket_id,
             'price' => $this->price,
             'quantity' => $this->quantity,
+            'discount' => $this->discount,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

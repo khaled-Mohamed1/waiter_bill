@@ -76,7 +76,8 @@ class TicketController extends Controller
                     'product_id' => $request->product_id[$key],
                     'ticket_id' => null,
                     'quantity' => $request->product_quantity[$key],
-                    'price' => $request->product_price[$key]
+                    'price' => $request->product_price[$key],
+                    'discount' => $request->product_discount[$key]
                 ]);
 
                 $purchasesTicketIds[] = $ticket_purchases->id;
@@ -94,6 +95,11 @@ class TicketController extends Controller
                 'ticket_total' => $request->ticket_total,
                 'ticket_type' => $request->ticket_type,
                 'table_id' => $table->id ?? null,
+                'ticket_total_discount' => $request->tickticket_total_discountet_type,
+                'ticket_total_summation' => $request->ticket_total_summation,
+                'ticket_paid' => $request->ticket_paid,
+                'ticket_rest' => $request->ticket_rest,
+                'ticket_payment' => $request->ticket_payment,
                 'company_id' => $user->company_id,
                 'user_id' => $user->id
             ]);

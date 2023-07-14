@@ -16,7 +16,12 @@ class Ticket extends Model
         'table_id',
         'ticket_name',
         'ticket_total',
-        'ticket_type'
+        'ticket_type',
+        'ticket_total_discount',
+        'ticket_total_summation',
+        'ticket_paid',
+        'ticket_rest',
+        'ticket_payment',
     ];
 
     public function UserTicket(): \Illuminate\Database\Eloquent\Relations\BelongsTo

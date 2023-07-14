@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('ticket_id')->references('id')->on('tickets')->cascadeOnDelete();
             $table->float('price')->nullable();
             $table->integer('quantity')->default(1);
+            $table->float('discount')->default(0);
             $table->timestamps();
         });
     }
