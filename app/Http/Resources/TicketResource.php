@@ -21,7 +21,7 @@ class TicketResource extends JsonResource
             'ticket_name' => $this->ticket_name ?? null,
             'ticket_total' => $this->ticket_total,
             'ticket_type' => $this->ticket_type,
-            'ticket_total_discount' => $this->tickticket_total_discountet_type,
+            'ticket_total_discount' => $this->ticket_total_discount,
             'ticket_total_summation' => $this->ticket_total_summation,
             'ticket_paid' => $this->ticket_paid,
             'ticket_rest' => $this->ticket_rest,
