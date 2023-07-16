@@ -328,7 +328,7 @@ class TicketController extends Controller
         DB::beginTransaction();
         try {
             // Detail
-            $ticket = Table::find($id);
+            $ticket = Ticket::find($id);
             if (!$ticket) {
                 return response()->json([
                     'status' => false,
