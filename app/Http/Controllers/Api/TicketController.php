@@ -269,6 +269,9 @@ class TicketController extends Controller
 
             $purchasesTicketIds = [];
 
+            // Delete existing ticket purchases
+            TicketPurchases::where('ticket_id', $ticket->id)->delete();
+
             foreach ($request->product_id as $key => $product) {
                 $old_product = Product::find($request->product_id[$key]);
 
@@ -281,38 +284,18 @@ class TicketController extends Controller
                     ], 404);
                 }
 
-                $ticket_purchase_id = $request->ticket_purchase_id[$key] ?? null;
-
-
-                if ($ticket_purchase_id) {
-                    $ticket_purchase = TicketPurchases::find($ticket_purchase_id);
-
-                    if (!$ticket_purchase) {
-                        DB::rollBack();
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'لم يتم العثور على هذه المشتريات',
-                            'data' => null,
-                        ], 404);
-                    }
-
-                    $ticket_purchase->product_id = $request->product_id[$key];
-                    $ticket_purchase->quantity = $request->product_quantity[$key];
-                    $ticket_purchase->price = $request->product_price[$key];
-                    $ticket_purchase->discount = $request->product_discount[$key];
-                    $ticket_purchase->save();
-                } else {
-                    $ticket_purchase = TicketPurchases::create([
-                        'product_id' => $request->product_id[$key],
-                        'ticket_id' => $ticket->id,
-                        'quantity' => $request->product_quantity[$key],
-                        'price' => $request->product_price[$key],
-                        'discount' => $request->product_discount[$key]
-                    ]);
-                }
+                $ticket_purchase = TicketPurchases::create([
+                    'product_id' => $request->product_id[$key],
+                    'ticket_id' => $ticket->id,
+                    'quantity' => $request->product_quantity[$key],
+                    'price' => $request->product_price[$key],
+                    'discount' => $request->product_discount[$key]
+                ]);
 
                 $purchasesTicketIds[] = $ticket_purchase->id;
             }
+
+            DB::commit();
 
             // Delete any ticket purchases that were not included in the request
             TicketPurchases::where('ticket_id', $ticket->id)->whereNotIn('id', $purchasesTicketIds)->delete();
